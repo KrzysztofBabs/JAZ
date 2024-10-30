@@ -1,7 +1,9 @@
 package org.example;
 
 
+import org.example.facades.IClassFacade;
 import org.example.facades.IMethodFacade;
+import org.example.facades.SimpleClass;
 import org.example.facades.SimpleMethod;
 
 import java.lang.reflect.Field;
@@ -17,6 +19,7 @@ public class Application {
         firstExerciseForMethodFacades(subjectClass);
         secondExerciseForClassFacades();
     }
+
 
 
 
@@ -39,7 +42,8 @@ public class Application {
         IMethodFacade simplePrivateMethod = new SimpleMethod(setSomethingMethod);
         IMethodFacade simplePublicMethod = new SimpleMethod(emptyMethod);
         IMethodFacade getterFacade = new SimpleMethod(getterMethod);
-        IMethodFacade setterFacade = new SimpleMethod(setterMethod);
+//        IMethodFacade setterFacade = new SimpleMethod(setterMethod);
+        IMethodFacade setterFacade = new SimpleMethod(subjectClass.getDeclaredMethod("setNumber", int.class));
 
         /**
          * Teraz zaczniemy powoli dodawać deklarację nowych metod w interfejsie
@@ -87,13 +91,13 @@ public class Application {
         /**
          * getFieldName - zwraca nazwę pola dla którego metoda jest właściwością (getterem lub setterem)
          */
-//        if(!setterFacade.getFieldName().equals("number"))throw new Exception("pole do którego odnosi się właściwość nosi nazwę number");
+        if(!setterFacade.getFieldName().equals("number"))throw new Exception("pole do którego odnosi się właściwość nosi nazwę number");
 
         /**
          * GetUnderlyingMethod - zwraca definicję metody na którą jest nałożona fasada
          */
-//        Method underlyingMethod =setterFacade.GetUnderlyingMethod();
-//        if(!underlyingMethod.getName().equals("setNumber"))throw new Exception("nie ma dostępu do metody pierwotnej (z której jest zrobiona fasada)");
+        Method underlyingMethod =setterFacade.GetUnderlyingMethod();
+        if(!underlyingMethod.getName().equals("setNumber"))throw new Exception("nie ma dostępu do metody pierwotnej (z której jest zrobiona fasada)");
     }
 
     private static void secondExerciseForClassFacades() throws Exception {
@@ -102,56 +106,56 @@ public class Application {
          * Tutaj nołożymy fasadę na definicję klasy.
          * utwórz interfejs o nazwie IClassFacade oraz jego prostą implementację w postaci klasy SimpleClass
          */
-//        IClassFacade subjectClassFacade = new SimpleClass(Subject.class);
+        IClassFacade subjectClassFacade = new SimpleClass(Subject.class);
 
         /**
          * getPublicDeclaredMethods - zwraca fasady metod publicznych zadeklarowanych w klasie
          */
-//        var publicMethods = subjectClassFacade.getPublicDeclaredMethods();
-//        if(publicMethods.size()!=14)throw new Exception("nie zwraca wszystkich publicznych metod");
+        var publicMethods = subjectClassFacade.getPublicDeclaredMethods();
+        if(publicMethods.size()!=14)throw new Exception("nie zwraca wszystkich publicznych metod");
 
         /**
          * getPublicGetters - zwraca fasady getterów
          *  [odkomentuj metodę areGettersFine]
          */
-//        var publicGetters = subjectClassFacade.getPublicGetters();
-//        if(!areGettersFine(publicGetters))throw new Exception("nie zwraca dobrze wszystkich getterów");
+        var publicGetters = subjectClassFacade.getPublicGetters();
+        if(!areGettersFine(publicGetters))throw new Exception("nie zwraca dobrze wszystkich getterów");
 
         /**
          * getPublicSetters - zwraca fasady setterów
          *  [odkomentuj metodę areSettersFine]
          */
-//        var publicSetters = subjectClassFacade.getPublicSetters();
-//        if(!areSettersFine(publicSetters))throw new Exception("nie zwraca dobrze wszystkich setterów");
+        var publicSetters = subjectClassFacade.getPublicSetters();
+        if(!areSettersFine(publicSetters))throw new Exception("nie zwraca dobrze wszystkich setterów");
 
         /**
          * getFieldsForPublicProperties - zwraca listę pól klasy (List<Field>), do których są gettery i settery (oba razem)
          *  [odkomentuj metodę areFieldsFine]
          */
-//        var fieldsWithProperties = subjectClassFacade.getFieldsForPublicProperties();
-//        if(!areFieldsFine(fieldsWithProperties)) throw new Exception("nie zwraca dobrze wszystkich pól do których jest setter i getter (jednocześnie oba)");
+        var fieldsWithProperties = subjectClassFacade.getFieldsForPublicProperties();
+        if(!areFieldsFine(fieldsWithProperties)) throw new Exception("nie zwraca dobrze wszystkich pól do których jest setter i getter (jednocześnie oba)");
     }
 
-//    private static boolean areGettersFine(List<IMethodFacade> publicGetters) {
-//        return publicGetters
-//                .stream()
-//                .map(y -> y.GetUnderlyingMethod().getName())
-//                .toList().containsAll(List.of("getStatus", "getNumber", "isDone", "getName"))
-//                && publicGetters.size()==4
-//                ;
-//    }
+    private static boolean areGettersFine(List<IMethodFacade> publicGetters) {
+        return publicGetters
+                .stream()
+                .map(y -> y.GetUnderlyingMethod().getName())
+                .toList().containsAll(List.of("getStatus", "getNumber", "isDone", "getName"))
+                && publicGetters.size()==4
+                ;
+    }
 
-//    private static boolean areSettersFine(List<IMethodFacade> publicSetters) {
-//        return publicSetters
-//                .stream()
-//                .map(y -> y.GetUnderlyingMethod().getName())
-//                .toList().containsAll(List.of("setName","setNumber","setIsDone"))
-//                && publicSetters.size()==3;
-//    }
+    private static boolean areSettersFine(List<IMethodFacade> publicSetters) {
+        return publicSetters
+                .stream()
+                .map(y -> y.GetUnderlyingMethod().getName())
+                .toList().containsAll(List.of("setName","setNumber","setIsDone"))
+                && publicSetters.size()==3;
+    }
 
-//    private static boolean areFieldsFine(List<Field> fieldsWithProperties) {
-//        return fieldsWithProperties.stream()
-//                .map(x -> x.getName())
-//                .toList().containsAll(List.of("name", "number", "isDone")) && fieldsWithProperties.size() == 3;
-//    }
+    private static boolean areFieldsFine(List<Field> fieldsWithProperties) {
+        return fieldsWithProperties.stream()
+                .map(x -> x.getName())
+                .toList().containsAll(List.of("name", "number", "isDone")) && fieldsWithProperties.size() == 3;
+    }
 }

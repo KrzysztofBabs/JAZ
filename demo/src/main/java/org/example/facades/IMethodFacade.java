@@ -11,5 +11,5 @@ public interface IMethodFacade {
     boolean isSetter();
     boolean isGetter();
     String getFieldName();
-    Method getUnderlyingMethod();
+    Method GetUnderlyingMethod();
 }

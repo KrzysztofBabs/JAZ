@@ -35,21 +35,56 @@ public class SimpleMethod implements IMethodFacade{
     }
 
     public boolean isSetter() {
-        return method.getName().equals("set");
+        if(!Modifier.isPublic(method.getModifiers())){
+            return false;
+        }
+        if(method.getName().startsWith("set")){
+            if(method.getReturnType()==void.class && method.getParameterCount()==1)
+                return true;
+
+        }
+        return false;
 
     }
 
     public boolean isGetter() {
-        return method.getName().equals("get");
+//        return method.getName().equals("get") && method.getReturnType() != void.class && method.getParameterCount()==0 && Modifier.isPublic(method.getModifiers());
+//        if(!Modifier.isPublic(method.getModifiers())) return false;
+//        if(method.getName().equals("get")) return true;
+//        if(method.getReturnType()!=void.class) return true;
+//        if(method.getParameterCount()==0) return true;
+//        return false;
+        if(!Modifier.isPublic(method.getModifiers())){
+            return false;
+        }
+//        String methodName = method.getName();
 
+        if(method.getName().startsWith("get")){
+            return method.getReturnType() != void.class && method.getParameterCount() == 0;
+        }
+        if(method.getName().startsWith("is")){
+            return method.getReturnType() == boolean.class && method.getParameterCount() == 0;
+        }
+
+        return false;
     }
 
     @Override
     public String getFieldName() {
-        return "";
+        if(method.getName().startsWith("set")){
+            return method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4);
+        }
+        if(method.getName().startsWith("set") && method.getParameterCount() == 1) {
+            return method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4);
+        }
+        if(method.getName().startsWith("is") && method.getReturnType() == boolean.class) {
+            return method.getName().substring(2, 3).toLowerCase() + method.getName().substring(3);
+        }
+        return null;
+
     }
 
-    public Method getUnderlyingMethod(){
+    public Method GetUnderlyingMethod(){
         return method;
     }
 
